@@ -1,5 +1,6 @@
 import csv
 import sys
+import calendar
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -59,7 +60,42 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    with open(filename, 'r') as f:
+        reader = csv.reader(f)
+        next(reader, None)
+        evidence = []
+        labels = []
+        # create a month name to int dict, `if num` checks if num is not less than 0, `num - 1` because built-in month starts from 1
+        monthToInt = {name: num - 1 for num, name in enumerate(calendar.month_abbr) if num}
+        # remove `Jun` and replace with `June` to follow the csv file
+        monthToInt.pop('Jun', None)
+        monthToInt['June'] = 5
+        visitorType = {"New_Visitor": 0, "Returning_Visitor": 1, "Other": 0}
+        csvBool = {"FALSE": 0, "TRUE": 1}
+        for row in reader:
+            rowEvidence = []
+            rowEvidence.append(int(row[0])) # administrative, int
+            rowEvidence.append(float(row[1])) # administrative_duration, float
+            rowEvidence.append(int(row[2])) # informational, int
+            rowEvidence.append(float(row[3])) # informational duration, flaot
+            rowEvidence.append(int(row[4])) # productRelated, int
+            rowEvidence.append(float(row[5])) # productRelated, float
+            rowEvidence.append(float(row[6])) # bounceRates, float
+            rowEvidence.append(float(row[7])) # exitRates, float
+            rowEvidence.append(float(row[8])) # pagerow, float
+            rowEvidence.append(float(row[9])) # specialDay, float
+            rowEvidence.append(monthToInt[row[10]]) # dict for month name to int
+            rowEvidence.append(int(row[11])) # OperatingSystems, int
+            rowEvidence.append(int(row[12])) # browser, int
+            rowEvidence.append(int(row[13])) # region, int
+            rowEvidence.append(int(row[14])) # trafficType, int
+            rowEvidence.append(visitorType[row[15]]) # visitorType, int
+            rowEvidence.append(csvBool[row[16]]) # weekend, int
+
+            evidence.append(rowEvidence)
+
+            labels.append(csvBool[row[17]])
+        
 
 
 def train_model(evidence, labels):
@@ -89,4 +125,4 @@ def evaluate(labels, predictions):
 
 
 if __name__ == "__main__":
-    main()
+    load_data("shopping.csv")
