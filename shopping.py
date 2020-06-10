@@ -95,7 +95,8 @@ def load_data(filename):
             evidence.append(rowEvidence)
 
             labels.append(csvBool[row[17]])
-        
+
+    return (evidence, labels)
 
 
 def train_model(evidence, labels):
@@ -125,4 +126,4 @@ def evaluate(labels, predictions):
 
 
 if __name__ == "__main__":
-    load_data("shopping.csv")
+    main()
